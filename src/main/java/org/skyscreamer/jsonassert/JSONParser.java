@@ -15,9 +15,11 @@
 package org.skyscreamer.jsonassert;
 
 import org.json.JSONArray;
+import org.json.JSONDeduplicateObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONString;
+import org.skyscreamer.jsonassert.comparator.JSONComparator;
 
 /**
  * Simple JSON parsing utility.
@@ -39,8 +41,15 @@ public class JSONParser {
      * @throws JSONException JSON parsing error
      */
     public static Object parseJSON(final String s) throws JSONException {
-        if (s.trim().startsWith("{")) {
-            return new JSONObject(s);
+        return parseJSON(s, JSONCompareMode.LENIENT);
+    }
+    
+    public static Object parseJSON(final String s, JSONCompareMode mode) throws JSONException {
+    	if (s.trim().startsWith("{")) {
+    		if(mode.isExtensible()) {
+                return new JSONObject(s);
+    		} 
+    		return new JSONDeduplicateObject(s); 
         }
         else if (s.trim().startsWith("[")) {
             return new JSONArray(s);
@@ -53,6 +62,6 @@ public class JSONParser {
             }
           };
         }
-        throw new JSONException("Unparsable JSON string: " + s);
+		throw new JSONException("Unparsable JSON string: " + s);
     }
 }

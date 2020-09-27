@@ -122,6 +122,8 @@ public final class JSONCompare {
      */
     public static JSONCompareResult compareJSON(String expectedStr, String actualStr, JSONCompareMode mode)
             throws JSONException {
+    	JSONParser.parseJSON(expectedStr, mode);
+        JSONParser.parseJSON(actualStr, mode);
         return compareJSON(expectedStr, actualStr, getComparatorForMode(mode));
     }
 

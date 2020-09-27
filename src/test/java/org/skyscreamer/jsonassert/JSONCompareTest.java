@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.skyscreamer.jsonassert.JSONCompare.compareJSON;
 import static org.skyscreamer.jsonassert.JSONCompareMode.LENIENT;
 import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
+import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -123,6 +124,12 @@ public class JSONCompareTest {
         JSONCompareResult result = compareJSON("[{\"address\" : {\"street\" : \"Acacia Avenue\"}}]", "[{\"age\" : 23}]", LENIENT);
         assertThat(result, failsWithMessage(equalTo("[0] Could not find match for element {\"address\":{\"street\":\"Acacia Avenue\"}}")));
     }
+    
+    @Test(expected = JSONException.class)
+    public void testAssertDuplicatedKeyInJsonObject() throws JSONException {
+    	assertTrue(compareJSON("{\"id\":4}","{\"id\": 3, \"id\":4}", LENIENT).passed());
+    	assertThat(compareJSON("{\"id\":4}","{\"id\": 3, \"id\":4}", STRICT), failsWithMessage(equalTo("")));
+    }
 
     @Test
     public void succeedsWithNestedJSONObjectsInUnorderedArray() throws JSONException {
@@ -150,7 +157,7 @@ public class JSONCompareTest {
     @Test
     public void reportsUnmatchedJSONArrayWhereOnlyExpectedContainsJSONObjectWithUniqueKey() throws JSONException {
         JSONCompareResult result = compareJSON("[{\"id\": 3}]", "[{}]", LENIENT);
-        assertThat(result, failsWithMessage(equalTo("[0] Could not find match for element {\"id\":3}")));
+		assertThat(result, failsWithMessage(equalTo("[0] Could not find match for element {\"id\":3}")));
     }
 
     @Test
